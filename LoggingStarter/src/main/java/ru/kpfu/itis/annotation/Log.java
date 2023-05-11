@@ -1,4 +1,4 @@
-package com.technokratos.annotation;
+package ru.kpfu.itis.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

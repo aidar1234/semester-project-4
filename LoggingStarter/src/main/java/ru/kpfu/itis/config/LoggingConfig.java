@@ -1,6 +1,6 @@
-package com.technokratos.config;
+package ru.kpfu.itis.config;
 
-import com.technokratos.aspect.LoggingAspect;
+import ru.kpfu.itis.aspect.LoggingAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

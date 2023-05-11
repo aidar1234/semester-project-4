@@ -1,4 +1,4 @@
-package com.technokratos.aspect;
+package ru.kpfu.itis.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -10,7 +10,7 @@ import org.aspectj.lang.annotation.Pointcut;
 @Slf4j
 public class LoggingAspect {
 
-    @Pointcut("@annotation(com.technokratos.annotation.Log)")
+    @Pointcut("@annotation(ru.kpfu.itis.annotation.Log)")
     public void loggingAnnotation() {
     }
 
