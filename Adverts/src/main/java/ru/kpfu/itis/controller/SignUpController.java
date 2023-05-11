@@ -27,6 +27,6 @@ public class SignUpController {
 
     @PostMapping
     public String signUp(@Valid @ModelAttribute(name = "user") UserSignUpRequest userSignUpRequest) {
-
+        return "";
     }
 }
