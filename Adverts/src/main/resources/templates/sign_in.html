@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Вход</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+</head>
+<body>
+<div th:insert="~{navbar::navbar}"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <div class="login-form border shadow bg-light mt-4 p-4">
+                <form th:action="@{/sign_in}" method="post" class="row g-3">
+                    <h4 class="mb-5 text-secondary">Добро пожаловать</h4>
+                    <div class="col-12">
+                        <label>Email</label>
+                        <input th:value="${param.email}" type="text" name="email" class="form-control" placeholder="Email">
+                    </div>
+                    <div class="col-12">
+                        <label>Пароль</label>
+                        <input th:value="${param.password}" type="password" name="password" class="form-control" placeholder="Пароль">
+                    </div>
+                    <div class="col-12">
+                        <span th:text="${error}" style="color: red"></span>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-dark float-end">Войти</button>
+                    </div>
+                </form>
+                <hr class="mt-4">
+                <div class="col-12">
+                    <p class="text-center mb-0">Не зарегистрированы на сайте?<a th:href="@{/sign_up}">Зарегистрироваться</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous">
+</script>
+<script src="/static/js/navbar.js"></script>
+</body>
+</html>

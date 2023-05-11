@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-md navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/home}">
+                <img src="/static/img/adv-logo.png" alt="home" style="width: 200px">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <form id="form" method="get" class="d-grid gap-2 d-md-block navbar-nav ms-auto">
+                    <button onclick="setActionToPlaceAdvert()" class="place-advert btn me-md-2" type="submit">Разместить объявление</button>
+                    <button onclick="setActionToFavorites()" class="favorites btn me-md-2" type="submit">Избранное</button>
+                    <button onclick="setActionToProfile()" class="account btn" type="submit">Личный кабинет</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+</html>
