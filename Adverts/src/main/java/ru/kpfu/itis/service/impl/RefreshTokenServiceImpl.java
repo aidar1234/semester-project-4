@@ -6,6 +6,7 @@ import ru.kpfu.itis.model.RefreshToken;
 import ru.kpfu.itis.repository.RefreshTokenRepository;
 import ru.kpfu.itis.service.RefreshTokenService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -15,13 +16,23 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public UUID create(RefreshToken refreshToken) {
+    public Long create(RefreshToken refreshToken) {
         refreshToken.setId(null);
         return refreshTokenRepository.save(refreshToken);
     }
 
     @Override
-    public void deleteByToken(UUID token) {
-        refreshTokenRepository.deleteByToken(token);
+    public Optional<RefreshToken> findByTokenName(UUID name) {
+        return refreshTokenRepository.findByTokenName(name);
+    }
+
+    @Override
+    public void update(RefreshToken token) {
+        refreshTokenRepository.update(token);
+    }
+
+    @Override
+    public void deleteByTokenName(UUID token) {
+        refreshTokenRepository.deleteByTokenName(token);
     }
 }

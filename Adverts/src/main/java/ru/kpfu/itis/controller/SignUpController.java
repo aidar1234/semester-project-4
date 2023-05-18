@@ -3,6 +3,7 @@ package ru.kpfu.itis.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,12 @@ public class SignUpController {
     }
 
     @PostMapping
-    public String signUp(@Valid @ModelAttribute(name = "user") UserSignUpRequest userSignUpRequest) {
-        return "";
+    public String signUp(@Valid @ModelAttribute(name = "user") UserSignUpRequest userSignUpRequest,
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "sign_up";
+        }
+        userService.create(userSignUpRequest);
+        return "redirect:/home";
     }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.kpfu.itis.model.Role;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +14,7 @@ import java.time.Instant;
 @Builder
 public class AccessToken {
 
-    public static final long EXPIRE_MINUTES = 20L;
+    public static final long EXPIRE_MINUTES = 1L;
 
     private String email;
 
@@ -24,5 +24,5 @@ public class AccessToken {
 
     private Role role;
 
-    private Instant expire;
+    private LocalDateTime expire;
 }

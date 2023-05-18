@@ -15,7 +15,7 @@
                 <form id="form" method="get" class="d-grid gap-2 d-md-block navbar-nav ms-auto">
                     <button onclick="setActionToPlaceAdvert()" class="place-advert btn me-md-2" type="submit">Разместить объявление</button>
                     <button onclick="setActionToFavorites()" class="favorites btn me-md-2" type="submit">Избранное</button>
-                    <button onclick="setActionToProfile()" class="account btn" type="submit">Личный кабинет</button>
+                    <button th:value="${firstNameLastName}" onclick="setActionToProfile()" class="account btn" type="submit">Личный кабинет</button>
                 </form>
             </div>
         </div>

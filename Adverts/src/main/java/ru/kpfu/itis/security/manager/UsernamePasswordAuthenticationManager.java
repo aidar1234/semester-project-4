@@ -22,12 +22,11 @@ public class UsernamePasswordAuthenticationManager implements AuthenticationMana
         String email = (String) authentication.getPrincipal();
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        if (!userDetails.getPassword().equals(passwordEncoder.encode((String) authentication.getCredentials()))) {
+        String password = (String) authentication.getCredentials();
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new AuthenticationServiceException("password not match");
         }
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null);
-        auth.setAuthenticated(true);
-        return auth;
+        return new UsernamePasswordAuthenticationToken(userDetails, null);
     }
 }

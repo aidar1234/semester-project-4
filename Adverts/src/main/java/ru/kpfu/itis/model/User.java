@@ -24,9 +24,8 @@ public class User {
     //AJAX - добавление в избранное или номер телефона и населенный пункт как указано в профиле
 
     @Id
-    //@GeneratedValue(generator = "UUID")
-    //@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
     @Column(name = "email")
@@ -62,9 +61,6 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
-
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
-    private RefreshToken refreshToken;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<TransportAdvert> transportAdverts;

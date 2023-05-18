@@ -1,15 +1,16 @@
 package ru.kpfu.itis.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.kpfu.itis.config.SecurityConfig;
+import ru.kpfu.itis.model.RefreshToken;
 import ru.kpfu.itis.security.AccessToken;
 import ru.kpfu.itis.security.JwtUtil;
 import ru.kpfu.itis.security.authentication.JwtAuthentication;
+import ru.kpfu.itis.service.RefreshTokenService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,19 +18,30 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
-import static ru.kpfu.itis.config.SecurityConfig.STATIC_RESOURCE_PREFIX_URL;
+import static ru.kpfu.itis.model.RefreshToken.EXPIRE_DAYS;
 import static ru.kpfu.itis.security.JwtUtil.ACCESS_TOKEN_NAME;
+import static ru.kpfu.itis.security.JwtUtil.REFRESH_TOKEN_NAME;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final String[] authenticationUrls;
+    private final RefreshTokenService refreshTokenService;
+    private final String signInUrl;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   RefreshTokenService refreshTokenService,
+                                   String signInUrl,
+                                   String... authenticationUrls) {
         this.jwtUtil = jwtUtil;
+        this.authenticationUrls = authenticationUrls;
+        this.refreshTokenService = refreshTokenService;
+        this.signInUrl = signInUrl;
     }
 
     @Override
@@ -37,36 +49,85 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getServletPath().startsWith(STATIC_RESOURCE_PREFIX_URL)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // if before this filter usernamePasswordFilter did authentication by username and password
         if (authentication != null && authentication.isAuthenticated()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String[] urls = SecurityConfig.authenticateUrls;
-        for (String url : urls) {
+        // if request url is authentication url
+        for (String url : authenticationUrls) {
             if (request.getServletPath().equals(url)) {
-                Optional<String> jwt = Arrays.stream(request.getCookies())
-                        .filter((cookie) -> cookie.getName().equals(ACCESS_TOKEN_NAME))
+
+                if (request.getCookies() == null) {
+                    response.sendRedirect(signInUrl);
+                    return;
+                }
+
+                // get json web token as string
+                Optional<String> optionalJwt = Arrays.stream(request.getCookies())
+                        .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN_NAME))
                         .map(Cookie::getValue)
                         .findFirst();
 
-                if (jwt.isEmpty()) {
-                    response.sendRedirect("/sign_in");
+                if (optionalJwt.isEmpty()) {
+                    response.sendRedirect(signInUrl);
                     return;
                 }
+
+                //jwt verifier throws JWTVerificationException
                 try {
-                    DecodedJWT decodedJWT = jwtUtil.verify(jwt.get());
-                    AccessToken accessToken = jwtUtil.createAccessToken(decodedJWT);
+                    DecodedJWT decodedJWT = jwtUtil.verify(optionalJwt.get());
+                    AccessToken accessToken = jwtUtil.getAccessToken(decodedJWT); // it`s json web token as java object
+
+                    JwtAuthentication jwtAuthentication = new JwtAuthentication(accessToken, true);
+                    SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
+                } catch (TokenExpiredException e) {
+                    Optional<String> optionalTokenString = Arrays.stream(request.getCookies())
+                            .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_NAME))
+                            .map(Cookie::getValue)
+                            .findFirst();
+
+                    if (optionalTokenString.isEmpty()) {
+                        response.sendRedirect(signInUrl);
+                        return;
+                    }
+
+                    // get refresh token as string from repo
+                    Optional<RefreshToken> optionalToken = refreshTokenService.findByTokenName(UUID.fromString(optionalTokenString.get()));
+                    if (optionalToken.isEmpty()) {
+                        response.sendRedirect(signInUrl);
+                        return;
+                    }
+
+                    RefreshToken refreshToken = optionalToken.get();
+
+                    LocalDateTime expire = refreshToken.getExpire();
+                    if (LocalDateTime.now().isAfter(expire)) {
+                        response.sendRedirect(signInUrl);
+                        return;
+                    }
+
+                    refreshToken.setToken(UUID.randomUUID());
+                    refreshToken.setExpire(LocalDateTime.now().plusDays(EXPIRE_DAYS));
+                    refreshTokenService.update(refreshToken);
+
+                    AccessToken accessToken = jwtUtil.createAccessToken(refreshToken.getUser());
+
+                    String jwt = jwtUtil.createJwt(refreshToken.getUser());
+                    Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, jwt);
+                    Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken.getToken().toString());
+
+                    response.addCookie(accessTokenCookie);
+                    response.addCookie(refreshTokenCookie);
+
                     JwtAuthentication jwtAuthentication = new JwtAuthentication(accessToken, true);
                     SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
                 } catch (JWTVerificationException e) {
-                    //TODO: create new token by refresh token, if refresh token not exist - redirect to sign_in
+                    response.sendRedirect(signInUrl);
+                    return;
                 }
 
             }

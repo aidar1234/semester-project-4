@@ -2,11 +2,16 @@ package ru.kpfu.itis.service;
 
 import ru.kpfu.itis.model.RefreshToken;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RefreshTokenService {
 
-    UUID create(RefreshToken refreshToken);
+    Long create(RefreshToken refreshToken);
 
-    void deleteByToken(UUID token);
+    Optional<RefreshToken> findByTokenName(UUID name);
+
+    void update(RefreshToken refreshToken);
+
+    void deleteByTokenName(UUID token);
 }

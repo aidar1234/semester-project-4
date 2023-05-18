@@ -1,7 +1,8 @@
 .navbar-custom {
     background: #f7f1da;
     border: 1px solid #c4c4c4;
-    height: 50px
+    height: 50px;
+    z-index: 10;
 }
 
 .place-advert {

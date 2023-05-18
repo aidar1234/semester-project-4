@@ -43,3 +43,34 @@
     --bs-btn-active-color: white;
     --bs-btn-active-bg: #2a526b
 }
+
+.choose-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 70px;
+    font-weight: normal;
+    font-size: 28px;
+    color: #23a45b;
+}
+
+.choose-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.choose-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.choose-img {
+    width: 45vh;
+    height: 30vh;
+    border-radius: 10%;
+}

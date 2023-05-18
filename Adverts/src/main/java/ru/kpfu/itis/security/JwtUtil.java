@@ -12,8 +12,10 @@ import ru.kpfu.itis.model.Role;
 import ru.kpfu.itis.model.User;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import static ru.kpfu.itis.model.RefreshToken.EXPIRE_DAYS;
@@ -33,7 +35,10 @@ public class JwtUtil {
 
     public String createJwt(User user) {
         return JWT.create()
-                .withExpiresAt(Instant.from(LocalDateTime.now().plusMinutes(EXPIRE_MINUTES)))
+                .withExpiresAt(LocalDateTime
+                        .now()
+                        .plusMinutes(EXPIRE_MINUTES)
+                        .toInstant(ZonedDateTime.now(ZoneId.systemDefault()).getOffset()))
                 .withClaim("email", user.getEmail())
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
@@ -47,23 +52,28 @@ public class JwtUtil {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
+                .expire(LocalDateTime.now().plusDays(EXPIRE_MINUTES))
                 .build();
     }
 
-    public AccessToken createAccessToken(DecodedJWT decodedJWT) {
+    public AccessToken getAccessToken(DecodedJWT decodedJWT) {
+        Date date = decodedJWT.getExpiresAt();
         return AccessToken.builder()
                 .email(decodedJWT.getClaim("email").asString())
                 .firstName(decodedJWT.getClaim("firstName").asString())
                 .lastName(decodedJWT.getClaim("lastName").asString())
                 .role(Role.valueOf(decodedJWT.getClaim("role").asString()))
+                .expire(LocalDateTime.of(
+                        date.getYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds())
+                )
                 .build();
     }
 
     public RefreshToken createRefreshToken(User user) {
         return RefreshToken.builder()
                 .token(UUID.randomUUID())
-                .user(user)
                 .expire(LocalDateTime.now().plusDays(EXPIRE_DAYS))
+                .user(user)
                 .build();
     }
 

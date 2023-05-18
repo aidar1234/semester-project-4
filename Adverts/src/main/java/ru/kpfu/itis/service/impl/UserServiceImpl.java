@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kpfu.itis.dto.request.UserSignUpRequest;
+import ru.kpfu.itis.model.Role;
+import ru.kpfu.itis.model.State;
 import ru.kpfu.itis.model.User;
 import ru.kpfu.itis.repository.UserRepository;
 import ru.kpfu.itis.service.UserService;
@@ -26,6 +28,8 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .phone(request.getPhone())
                 .locality(request.getLocality())
+                .state(State.NOT_CONFIRMED)
+                .role(Role.USER)
                 .build();
 
         return userRepository.save(user);

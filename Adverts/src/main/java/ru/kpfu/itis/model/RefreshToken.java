@@ -1,6 +1,10 @@
 package ru.kpfu.itis.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,17 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Builder
-@ToString(exclude = "user")
-@EqualsAndHashCode(exclude = "user")
 public class RefreshToken {
 
     public static long EXPIRE_DAYS = 30L;
 
     @Id
-    //@GeneratedValue(generator = "UUID")
-    //@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private Long id;
 
     private UUID token;
 
