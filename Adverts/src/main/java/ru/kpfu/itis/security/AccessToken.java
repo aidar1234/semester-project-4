@@ -5,8 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.kpfu.itis.model.Role;
+import ru.kpfu.itis.model.State;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,15 +16,17 @@ import java.time.LocalDateTime;
 @Builder
 public class AccessToken {
 
-    public static final long EXPIRE_MINUTES = 1L;
+    public static final long EXPIRE_MINUTES = 15L;
+
+    private UUID id;
 
     private String email;
 
-    private String firstName;
-
-    private String lastName;
-
     private Role role;
+
+    private State state;
+
+    private String csrf;
 
     private LocalDateTime expire;
 }

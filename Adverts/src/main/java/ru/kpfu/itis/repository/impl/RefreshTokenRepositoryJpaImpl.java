@@ -26,11 +26,9 @@ public class RefreshTokenRepositoryJpaImpl implements RefreshTokenRepository {
 
     @Transactional
     @Override
-    public void deleteByTokenName(UUID token) {
-        Optional<RefreshToken> optionalToken = findByTokenName(token);
-        if (optionalToken.isPresent()) {
-            entityManager.remove(findByTokenName(token));
-        }
+    public void deleteByTokenName(UUID name) {
+        Optional<RefreshToken> optionalToken = findByTokenName(name);
+        optionalToken.ifPresent(refreshToken -> entityManager.remove(refreshToken));
     }
 
     @Transactional
@@ -40,9 +38,23 @@ public class RefreshTokenRepositoryJpaImpl implements RefreshTokenRepository {
     }
 
     @Override
+    public Optional<RefreshToken> findByUserId(UUID id) {
+        TypedQuery<RefreshToken> typedQuery = entityManager.createQuery(
+                "SELECT refreshToken FROM RefreshToken refreshToken WHERE refreshToken.user.id = :id", RefreshToken.class);
+
+        typedQuery.setParameter("id", id);
+        try {
+            RefreshToken refreshToken = typedQuery.getSingleResult();
+            return Optional.of(refreshToken);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<RefreshToken> findByTokenName(UUID name) {
         TypedQuery<RefreshToken> typedQuery = entityManager.createQuery(
-                "SELECT refreshToken FROM RefreshToken refreshToken where refreshToken.token = :token", RefreshToken.class);
+                "SELECT refreshToken FROM RefreshToken refreshToken WHERE refreshToken.token = :token", RefreshToken.class);
         typedQuery.setParameter("token", name);
         try {
             RefreshToken refreshToken = typedQuery.getSingleResult();

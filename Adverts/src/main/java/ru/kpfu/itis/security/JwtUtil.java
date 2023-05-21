@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.kpfu.itis.model.RefreshToken;
 import ru.kpfu.itis.model.Role;
+import ru.kpfu.itis.model.State;
 import ru.kpfu.itis.model.User;
 
 import java.nio.charset.StandardCharsets;
@@ -33,39 +34,52 @@ public class JwtUtil {
         this.algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createJwt(User user) {
+    public String createEmailVerificationJwt(String email, int expireDays) {
+        return JWT.create()
+                .withExpiresAt(LocalDateTime
+                        .now()
+                        .plusDays(expireDays)
+                        .toInstant(ZonedDateTime.now(ZoneId.systemDefault()).getOffset()))
+                .withClaim("email", email)
+                .sign(algorithm);
+    }
+
+    public String createJwt(User user, String csrf) {
         return JWT.create()
                 .withExpiresAt(LocalDateTime
                         .now()
                         .plusMinutes(EXPIRE_MINUTES)
                         .toInstant(ZonedDateTime.now(ZoneId.systemDefault()).getOffset()))
+                .withClaim("id", user.getId().toString())
                 .withClaim("email", user.getEmail())
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
                 .withClaim("role", user.getRole().toString())
+                .withClaim("state", user.getState().toString())
+                .withClaim("csrf", csrf)
                 .sign(algorithm);
     }
 
-    public AccessToken createAccessToken(User user) {
+    public AccessToken createAccessToken(User user, String csrf) {
         return AccessToken.builder()
+                .id(user.getId())
                 .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
                 .role(user.getRole())
+                .state(user.getState())
+                .csrf(csrf)
                 .expire(LocalDateTime.now().plusDays(EXPIRE_MINUTES))
                 .build();
     }
 
     public AccessToken getAccessToken(DecodedJWT decodedJWT) {
-        Date date = decodedJWT.getExpiresAt();
         return AccessToken.builder()
+                .id(UUID.fromString(decodedJWT.getClaim("id").asString()))
                 .email(decodedJWT.getClaim("email").asString())
-                .firstName(decodedJWT.getClaim("firstName").asString())
-                .lastName(decodedJWT.getClaim("lastName").asString())
                 .role(Role.valueOf(decodedJWT.getClaim("role").asString()))
-                .expire(LocalDateTime.of(
-                        date.getYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds())
-                )
+                .state(State.valueOf(decodedJWT.getClaim("state").asString()))
+                .expire(LocalDateTime.ofInstant(decodedJWT.getExpiresAtAsInstant(),
+                        ZonedDateTime.now(ZoneId.systemDefault()).getOffset()))
+                .csrf(decodedJWT.getClaim("csrf").asString())
                 .build();
     }
 
@@ -80,5 +94,9 @@ public class JwtUtil {
     public DecodedJWT verify(String jwt) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(jwt);
+    }
+
+    public DecodedJWT decode(String jwt) {
+        return JWT.decode(jwt);
     }
 }

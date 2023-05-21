@@ -27,6 +27,8 @@ public class UsernamePasswordAuthenticationManager implements AuthenticationMana
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new AuthenticationServiceException("password not match");
         }
-        return new UsernamePasswordAuthenticationToken(userDetails, null);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null);
+        token.setDetails(userDetails);
+        return token;
     }
 }

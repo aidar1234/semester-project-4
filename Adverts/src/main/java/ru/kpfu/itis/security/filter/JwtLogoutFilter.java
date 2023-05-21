@@ -36,13 +36,16 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
                     if (REFRESH_TOKEN_NAME.equals(cookieName)) {
                         refreshTokenService.deleteByTokenName(UUID.fromString(cookie.getValue()));
                         cookie.setMaxAge(0);
+                        response.addCookie(cookie);
                     }
                     if (ACCESS_TOKEN_NAME.equals(cookieName)) {
                         cookie.setMaxAge(0);
+                        response.addCookie(cookie);
                     }
                 }
             response.setStatus(HttpServletResponse.SC_OK);
             response.sendRedirect("/home");
+            return;
         }
         filterChain.doFilter(request, response);
     }

@@ -30,16 +30,16 @@ import static ru.kpfu.itis.security.JwtUtil.REFRESH_TOKEN_NAME;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final String[] authenticationUrls;
+    private final String[] authenticationUrlPrefixes;
     private final RefreshTokenService refreshTokenService;
     private final String signInUrl;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil,
                                    RefreshTokenService refreshTokenService,
                                    String signInUrl,
-                                   String... authenticationUrls) {
+                                   String... authenticationUrlPrefixes) {
         this.jwtUtil = jwtUtil;
-        this.authenticationUrls = authenticationUrls;
+        this.authenticationUrlPrefixes = authenticationUrlPrefixes;
         this.refreshTokenService = refreshTokenService;
         this.signInUrl = signInUrl;
     }
@@ -58,8 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // if request url is authentication url
-        for (String url : authenticationUrls) {
-            if (request.getServletPath().equals(url)) {
+        for (String url : authenticationUrlPrefixes) {
+            if (request.getServletPath().startsWith(url)) {
 
                 if (request.getCookies() == null) {
                     response.sendRedirect(signInUrl);
@@ -96,9 +96,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
 
                     // get refresh token as string from repo
-                    Optional<RefreshToken> optionalToken = refreshTokenService.findByTokenName(UUID.fromString(optionalTokenString.get()));
+                    Optional<RefreshToken> optionalToken = refreshTokenService.findByTokenName(
+                            UUID.fromString(optionalTokenString.get())
+                    );
                     if (optionalToken.isEmpty()) {
-                        response.sendRedirect(signInUrl);
+                        response.sendRedirect("/logout");
                         return;
                     }
 
@@ -114,9 +116,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     refreshToken.setExpire(LocalDateTime.now().plusDays(EXPIRE_DAYS));
                     refreshTokenService.update(refreshToken);
 
-                    AccessToken accessToken = jwtUtil.createAccessToken(refreshToken.getUser());
+                    String csrf = UUID.randomUUID().toString();
+                    AccessToken accessToken = jwtUtil.createAccessToken(refreshToken.getUser(), csrf);
 
-                    String jwt = jwtUtil.createJwt(refreshToken.getUser());
+                    String jwt = jwtUtil.createJwt(refreshToken.getUser(), csrf);
+
                     Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, jwt);
                     Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken.getToken().toString());
 

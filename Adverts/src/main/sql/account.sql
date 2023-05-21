@@ -7,7 +7,7 @@ CREATE TABLE account
     role          varchar(16)                 NOT NULL default 'USER',
     first_name    varchar(32)                 NOT NULL,
     last_name     varchar(32)                 NOT NULL,
-    phone         varchar(12) UNIQUE          NOT NULL,
+    phone         varchar(12)                 NOT NULL,
     locality      varchar(32)                 NOT NULL,
     created_date  timestamp without time zone NOT NULL DEFAULT now(),
     updated_date  timestamp without time zone NOT NULL DEFAULT now()

@@ -13,5 +13,7 @@ public interface RefreshTokenRepository {
 
     void update(RefreshToken token);
 
+    Optional<RefreshToken> findByUserId(UUID id);
+
     Optional<RefreshToken> findByTokenName(UUID name);
 }

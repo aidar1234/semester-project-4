@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Регистрация прошла успешно</title>
 </head>
 <body>
-    Вам отправили письмо с подтверждением электронной почты
-    Подтвердите почту для успешной регистрации
+    <span style="font-size: 20px">Вам отправили письмо с подтверждением электронной почты</span>
+    <br>
+    <span style="font-size: 20px">Подтвердите почту для успешной регистрации</span>
+    <br>
+    <a style="font-size: 20px" th:href="@{/sign_in}">Перейти на страницу входа</a>
 </body>
 </html>

@@ -13,5 +13,7 @@ public interface RefreshTokenService {
 
     void update(RefreshToken refreshToken);
 
+    void deleteByUserIdEfExists(UUID id);
+
     void deleteByTokenName(UUID token);
 }

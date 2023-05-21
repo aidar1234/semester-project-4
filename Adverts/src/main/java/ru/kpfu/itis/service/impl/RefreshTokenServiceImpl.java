@@ -32,6 +32,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
+    public void deleteByUserIdEfExists(UUID id) {
+        Optional<RefreshToken> optionalToken = refreshTokenRepository.findByUserId(id);
+        optionalToken.ifPresent(refreshToken -> refreshTokenRepository.deleteByTokenName(refreshToken.getToken()));
+    }
+
+    @Override
     public void deleteByTokenName(UUID token) {
         refreshTokenRepository.deleteByTokenName(token);
     }

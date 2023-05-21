@@ -23,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 import static ru.kpfu.itis.security.JwtUtil.ACCESS_TOKEN_NAME;
 import static ru.kpfu.itis.security.JwtUtil.REFRESH_TOKEN_NAME;
@@ -71,7 +72,6 @@ public class JwtUsernamePasswordAuthenticationFilter extends OncePerRequestFilte
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
-
         String email = request.getParameter(usernameParameter);
         String password = request.getParameter(passwordParameter);
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(email, password);
@@ -81,20 +81,25 @@ public class JwtUsernamePasswordAuthenticationFilter extends OncePerRequestFilte
     protected void successfulAuthentication(HttpServletResponse response,
                                             Authentication authentication) {
 
-        User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        User user = ((UserDetailsImpl) authentication.getDetails()).getUser();
 
+        refreshTokenService.deleteByUserIdEfExists(user.getId()); //delete old token if exists in database
         RefreshToken refreshToken = jwtUtil.createRefreshToken(user);
         refreshTokenService.create(refreshToken);
-        String jwt = jwtUtil.createJwt(user);
+
+        String csrf = UUID.randomUUID().toString();
+        String jwt = jwtUtil.createJwt(user, csrf);
 
         Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, jwt);
+        accessTokenCookie.setMaxAge(5_184_000); // one month
 
         Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken.getToken().toString());
+        refreshTokenCookie.setMaxAge(5_184_000);
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
-        AccessToken accessToken = jwtUtil.createAccessToken(user);
+        AccessToken accessToken = jwtUtil.createAccessToken(user, csrf);
 
         JwtAuthentication jwtAuthentication = new JwtAuthentication(accessToken, true);
         SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);

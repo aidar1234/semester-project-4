@@ -32,9 +32,8 @@ public class JwtAuthentication implements Authentication {
         return new UserDetailsImpl(
                 User.builder()
                         .email(accessToken.getEmail())
-                        .firstName(accessToken.getFirstName())
-                        .lastName(accessToken.getLastName())
                         .role(accessToken.getRole())
+                        .state(accessToken.getState())
                         .build()
         );
     }

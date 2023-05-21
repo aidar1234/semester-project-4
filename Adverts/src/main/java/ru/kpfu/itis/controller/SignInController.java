@@ -7,26 +7,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kpfu.itis.security.AccessToken;
-import ru.kpfu.itis.util.ModelAttributeGiver;
 
 @Controller
 @RequestMapping("/sign_in")
 public class SignInController {
-    //TODO отдельные таблицы под state и role, подтверждение почты, имя и фамилия на главной странице
 
     @GetMapping
     public String getSignInPage() {
         return "sign_in";
     }
 
+    // handling in JwtUsernamePasswordAuthenticationFilter
     @PostMapping
-    public String signIn(@AuthenticationPrincipal AccessToken accessToken, ModelMap modelMap) {
+    public String signIn() {
         return "redirect:/profile";
     }
 
     @PostMapping("/error")
     public String getSignInPage(ModelMap modelMap) {
-        modelMap.addAttribute("error", ModelAttributeGiver.SIGN_IN_ERROR);
+        modelMap.addAttribute("error", "Неверный email или пароль");
         return "sign_in";
     }
 }
