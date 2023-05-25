@@ -10,14 +10,12 @@
 <body>
 <div th:insert="~{navbar::navbar}"></div>
 <h1>Объявления транспорта:</h1>
-<br>
 <th:block th:if="${transportAdverts != null}" th:each="advert: ${transportAdverts}">
     <a style="font-size: 22px" th:text="${advert.name}" th:href="@{/profile/favorite/transport/{id}(id=${advert.id})}"></a>
     <br>
 </th:block>
 <br>
 <h1>Объявления электроники:</h1>
-<br>
 <th:block th:if="${electronicsAdverts != null}" th:each="advert: ${electronicsAdverts}">
     <a style="font-size: 22px" th:text="${advert.name}" th:href="@{/profile/favorite/electronics/{id}(id=${advert.id})}"></a>
     <br>
