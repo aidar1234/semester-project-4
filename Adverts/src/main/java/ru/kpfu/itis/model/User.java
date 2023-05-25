@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import ru.kpfu.itis.model.enums.Role;
+import ru.kpfu.itis.model.enums.State;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,8 +22,6 @@ import java.util.UUID;
 @Data
 @Builder
 public class User {
-
-    //AJAX - добавление в избранное или номер телефона и населенный пункт как указано в профиле
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -54,6 +54,28 @@ public class User {
     @Column(name = "role")
     private Role role;
 
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private File file;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<TransportAdvert> transportAdverts;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<ElectronicsAdvert> electronicsAdverts;
+
+    @ManyToMany
+    @JoinTable(name = "favorites",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "advert_id", referencedColumnName = "id"))
+    private List<TransportAdvert> favoriteTransportAdverts;
+
+    @ManyToMany
+    @JoinTable(name = "favorites",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "advert_id", referencedColumnName = "id"))
+    private List<ElectronicsAdvert> favoriteElectronicsAdverts;
+
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -61,9 +83,6 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<TransportAdvert> transportAdverts;
 
     public boolean isConfirmed() {
         return this.state == State.CONFIRMED;

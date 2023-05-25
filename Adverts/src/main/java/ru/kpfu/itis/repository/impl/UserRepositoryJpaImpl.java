@@ -1,11 +1,12 @@
 package ru.kpfu.itis.repository.impl;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kpfu.itis.exception.UserNotFoundException;
-import ru.kpfu.itis.model.State;
 import ru.kpfu.itis.model.User;
+import ru.kpfu.itis.model.enums.State;
 import ru.kpfu.itis.repository.UserRepository;
 
 import javax.persistence.NoResultException;
@@ -60,12 +61,21 @@ public class UserRepositoryJpaImpl implements UserRepository {
 
     @Transactional
     @Override
+    public void delete(User user) {
+        entityManager.delete(user);
+        entityManager.flush();
+    }
+
+    @Transactional
+    @Override
     public void banByEmail(String email) throws UserNotFoundException {
         Optional<User> optionalUser = findByEmail(email);
         if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setState(State.BANNED);
-            entityManager.update(user);
+            Query query = entityManager.createQuery(
+                    "UPDATE User user SET user.state = 'BANNED' WHERE user.id = (SELECT id FROM user WHERE email = :email)"
+            );
+            query.setParameter("email", email);
+            query.executeUpdate();
         } else {
             throw new UserNotFoundException();
         }

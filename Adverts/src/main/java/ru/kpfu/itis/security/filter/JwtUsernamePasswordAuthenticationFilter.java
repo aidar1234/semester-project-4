@@ -91,10 +91,12 @@ public class JwtUsernamePasswordAuthenticationFilter extends OncePerRequestFilte
         String jwt = jwtUtil.createJwt(user, csrf);
 
         Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, jwt);
-        accessTokenCookie.setMaxAge(5_184_000); // one month
+        accessTokenCookie.setMaxAge(2_592_000); // one month
+        accessTokenCookie.setPath("/");
 
         Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken.getToken().toString());
-        refreshTokenCookie.setMaxAge(5_184_000);
+        refreshTokenCookie.setMaxAge(2_592_000);
+        refreshTokenCookie.setPath("/");
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);

@@ -1,9 +1,9 @@
 function setActionToPlaceAdvert() {
-    document.getElementById('form').setAttribute('action', '/place_advert');
+    document.getElementById('form').setAttribute('action', '/advert/new');
 }
 
 function setActionToFavorites() {
-    document.getElementById('form').setAttribute('action', '/favorites');
+    document.getElementById('form').setAttribute('action', '/profile/favorites');
 }
 
 function setActionToProfile() {

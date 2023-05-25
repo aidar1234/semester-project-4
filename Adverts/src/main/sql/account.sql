@@ -9,6 +9,7 @@ CREATE TABLE account
     last_name     varchar(32)                 NOT NULL,
     phone         varchar(12)                 NOT NULL,
     locality      varchar(32)                 NOT NULL,
+    file_id       bigint                      NULL REFERENCES file (id) ON DELETE CASCADE,
     created_date  timestamp without time zone NOT NULL DEFAULT now(),
     updated_date  timestamp without time zone NOT NULL DEFAULT now()
 )

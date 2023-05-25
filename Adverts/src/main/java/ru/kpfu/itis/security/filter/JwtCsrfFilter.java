@@ -29,6 +29,10 @@ public class JwtCsrfFilter extends OncePerRequestFilter {
         for (String url : urls) {
             if (request.getServletPath().equals(url) && request.getMethod().equals("POST")) {
                 Cookie[] cookies = request.getCookies();
+                if (cookies == null) {
+                    response.sendRedirect("/bad_csrf");
+                    return;
+                }
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals(ACCESS_TOKEN_NAME)) {
                         DecodedJWT decodedJWT = jwtUtil.decode(cookie.getValue());

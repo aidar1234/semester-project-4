@@ -1,4 +1,4 @@
-package ru.kpfu.itis.model;
+package ru.kpfu.itis.model.enums;
 
 public enum Role {
     USER,

@@ -122,7 +122,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String jwt = jwtUtil.createJwt(refreshToken.getUser(), csrf);
 
                     Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, jwt);
+                    accessTokenCookie.setMaxAge(2_592_000);
+                    accessTokenCookie.setPath("/");
+
                     Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken.getToken().toString());
+                    refreshTokenCookie.setMaxAge(2_592_000);
+                    refreshTokenCookie.setPath("/");
 
                     response.addCookie(accessTokenCookie);
                     response.addCookie(refreshTokenCookie);

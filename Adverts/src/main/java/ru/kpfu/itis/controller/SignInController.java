@@ -17,9 +17,9 @@ public class SignInController {
         return "sign_in";
     }
 
-    // handling in JwtUsernamePasswordAuthenticationFilter
     @PostMapping
     public String signIn() {
+        // handling in JwtUsernamePasswordAuthenticationFilter
         return "redirect:/profile";
     }
 

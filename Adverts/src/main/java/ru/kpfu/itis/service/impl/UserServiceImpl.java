@@ -11,12 +11,18 @@ import ru.kpfu.itis.dto.request.PasswordChangeRequest;
 import ru.kpfu.itis.dto.request.UserEditRequest;
 import ru.kpfu.itis.dto.request.UserSignUpRequest;
 import ru.kpfu.itis.dto.response.UserResponse;
+import ru.kpfu.itis.exception.AdvertAlreadyFavoriteException;
+import ru.kpfu.itis.exception.AdvertNotFoundException;
 import ru.kpfu.itis.exception.UserNotFoundException;
-import ru.kpfu.itis.model.Role;
-import ru.kpfu.itis.model.State;
+import ru.kpfu.itis.model.ElectronicsAdvert;
+import ru.kpfu.itis.model.TransportAdvert;
+import ru.kpfu.itis.model.enums.Role;
+import ru.kpfu.itis.model.enums.State;
 import ru.kpfu.itis.model.User;
 import ru.kpfu.itis.repository.UserRepository;
 import ru.kpfu.itis.security.JwtUtil;
+import ru.kpfu.itis.service.ElectronicsAdvertService;
+import ru.kpfu.itis.service.TransportAdvertService;
 import ru.kpfu.itis.service.UserService;
 
 import javax.mail.MessagingException;
@@ -32,6 +38,8 @@ import java.util.logging.Level;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ElectronicsAdvertService electronicsAdvertService;
+    private final TransportAdvertService transportAdvertService;
     private final PasswordEncoder passwordEncoder;
     private final Environment environment;
     private final JavaMailSender mailSender;
@@ -81,11 +89,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> findById(UUID id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
     public Optional<UserResponse> getUserResponseById(UUID id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             return Optional.of(UserResponse.builder()
+                    .fileName(user.getFile() != null ? user.getFile().getName() : null)
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
@@ -183,5 +197,80 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByEmail(String email) throws UserNotFoundException {
         userRepository.deleteByEmail(email);
+    }
+
+    @Override
+    public void update(User user) {
+        userRepository.update(user);
+    }
+
+    @Override
+    public void removeFavoriteTransportAdvertByUserIdAndAdvertId(UUID userId, UUID advertId) throws UserNotFoundException, AdvertNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<TransportAdvert> optionalAdvert = transportAdvertService.findById(advertId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        if (optionalAdvert.isEmpty()) {
+            throw new AdvertNotFoundException();
+        }
+        User user = optionalUser.get();
+        TransportAdvert advert = optionalAdvert.get();
+        user.getFavoriteTransportAdverts().remove(advert);
+        userRepository.update(user);
+    }
+
+    @Override
+    public void addFavoriteTransportAdvertByUserIdAndAdvertId(UUID userId, UUID advertId) throws UserNotFoundException, AdvertNotFoundException, AdvertAlreadyFavoriteException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<TransportAdvert> optionalAdvert = transportAdvertService.findById(advertId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        if (optionalAdvert.isEmpty()) {
+            throw new AdvertNotFoundException();
+        }
+        User user = optionalUser.get();
+        TransportAdvert advert = optionalAdvert.get();
+        if (user.getFavoriteTransportAdverts().contains(advert)) {
+            throw new AdvertAlreadyFavoriteException();
+        }
+        user.getFavoriteTransportAdverts().add(advert);
+        userRepository.update(user);
+    }
+
+    @Override
+    public void removeFavoriteElectronicsAdvertByUserIdAndAdvertId(UUID userId, UUID advertId) throws UserNotFoundException, AdvertNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<ElectronicsAdvert> optionalAdvert = electronicsAdvertService.findById(advertId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        if (optionalAdvert.isEmpty()) {
+            throw new AdvertNotFoundException();
+        }
+        User user = optionalUser.get();
+        ElectronicsAdvert advert = optionalAdvert.get();
+        user.getFavoriteElectronicsAdverts().remove(advert);
+        userRepository.update(user);
+    }
+
+    @Override
+    public void addFavoriteElectronicsAdvertByUserIdAndAdvertId(UUID userId, UUID advertId) throws UserNotFoundException, AdvertNotFoundException, AdvertAlreadyFavoriteException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<ElectronicsAdvert> optionalAdvert = electronicsAdvertService.findById(advertId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        if (optionalAdvert.isEmpty()) {
+            throw new AdvertNotFoundException();
+        }
+        User user = optionalUser.get();
+        ElectronicsAdvert advert = optionalAdvert.get();
+        if (user.getFavoriteElectronicsAdverts().contains(advert)) {
+            throw new AdvertAlreadyFavoriteException();
+        }
+        user.getFavoriteElectronicsAdverts().add(advert);
+        userRepository.update(user);
     }
 }

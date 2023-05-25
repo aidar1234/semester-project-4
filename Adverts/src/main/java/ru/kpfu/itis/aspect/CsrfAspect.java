@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 public class CsrfAspect {
 
-    @Pointcut("execution(public * ru.kpfu.itis.controller.AdminController.*(..))")
+    @Pointcut("execution(public * ru.kpfu.itis.controller.*.*(..))")
     public void addCsrf() {
     }
 

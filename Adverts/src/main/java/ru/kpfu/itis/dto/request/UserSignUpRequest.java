@@ -8,6 +8,7 @@ import ru.kpfu.itis.validation.annotation.PasswordAndRepeatConstraint;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @AllArgsConstructor
@@ -38,6 +39,7 @@ public class UserSignUpRequest {
 
     @NotBlank(message = "Не может быть пустым")
     @Size(max = 12, message = "Максимальная длина номера 12")
+    @Pattern(regexp = "(\\+7\\d{10})|(8\\d{10})", message = "Не соответсвует номеру")
     private String phone;
 
     @NotBlank(message = "Не может быть пустым")

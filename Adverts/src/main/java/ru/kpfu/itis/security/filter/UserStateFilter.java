@@ -4,8 +4,7 @@ import lombok.extern.java.Log;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.kpfu.itis.exception.UserNotFoundException;
-import ru.kpfu.itis.model.State;
+import ru.kpfu.itis.model.enums.State;
 import ru.kpfu.itis.model.User;
 import ru.kpfu.itis.security.details.UserDetailsImpl;
 import ru.kpfu.itis.service.UserService;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.logging.Level;
 
 @Log
 public class UserStateFilter extends OncePerRequestFilter {
@@ -41,17 +39,17 @@ public class UserStateFilter extends OncePerRequestFilter {
             String email = user.getEmail();
 
             for (String url : dangerUrlPrefixes) {
-                if (request.getServletPath().startsWith(url)) {
+                if (request.getServletPath().startsWith(url) && "POST".equals(request.getMethod())) {
                     Optional<User> optionalUser = userService.findByEmail(email);
                     if (optionalUser.isPresent()) {
                         if (optionalUser.get().getState().equals(State.BANNED)) {
+                            deleteCookies(request, response);
                             response.sendRedirect("/banned");
-                            deleteCookies(request);
                             return;
                         }
                         if (optionalUser.get().getState().equals(State.DELETED)) {
+                            deleteCookies(request, response);
                             response.sendRedirect("/deleted");
-                            deleteCookies(request);
                             return;
                         }
                     }
@@ -65,24 +63,27 @@ public class UserStateFilter extends OncePerRequestFilter {
             }
 
             if (user.getState().equals(State.BANNED)) {
+                deleteCookies(request, response);
                 response.sendRedirect("/banned");
-                deleteCookies(request);
                 return;
             }
 
             if (user.getState().equals(State.DELETED)) {
+                deleteCookies(request, response);
                 response.sendRedirect("/deleted");
-                deleteCookies(request);
                 return;
             }
         }
         filterChain.doFilter(request, response);
     }
 
-    private void deleteCookies(HttpServletRequest request) {
+    private void deleteCookies(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            Arrays.stream(cookies).forEach(cookie -> cookie.setMaxAge(0));
+            Arrays.stream(cookies).forEach(cookie -> {
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            });
         }
     }
 }

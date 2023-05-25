@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новое объявление</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/new_advert.css">
+</head>
+<body>
+<div th:insert="~{navbar::navbar}"></div>
+<div class="container">
+    <div class=" text-center mt-5 ">
+        <h1>Новое объявление</h1>
+    </div>
+    <div class="col-lg-7 mx-auto div-custom">
+        <div class="card mt-2 mx-auto p-4 bg-light">
+            <div class="card-body bg-light">
+                <div class="container">
+                    <form th:object="${advert}" enctype="multipart/form-data" method="post" th:action="@{/advert/new/electronics}">
+                        <div class="controls">
+                            <div class="col-md-12 div-custom">
+                                <label for="files">Фото <text style="color: red">*</text></label>
+                                <div class="col-sm-9 text-secondary">
+                                    <input required th:value="*{files}" accept="image/png, image/jpeg, image/jpg" name="files" id="files" type="file" multiple class="form-control">
+                                    <span style="color: red" th:if="${#fields.hasErrors('files')}" th:errors="*{files}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 div-custom">
+                                <div class="form-group">
+                                    <label for="name">Название
+                                        <text style="color: red">*</text>
+                                    </label>
+                                    <input th:value="*{name}" id="name" type="text" name="name" class="form-control" required>
+                                    <span style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 div-custom">
+                                <div class="form-group">
+                                    <label for="locality">Населённый пункт
+                                        <text style="color: red">*</text>
+                                    </label>
+                                    <input th:value="*{locality}" id="locality" type="text" name="locality" class="form-control" required>
+                                    <br>
+                                    <label>Использовать указанный в личном кабинете
+                                        <text style="color: red">*</text>
+                                        <input onclick="onLocalityCheckboxClick(this)" th:checked="${param.showLocality}" type="checkbox" name="showLocality">
+                                    </label>
+                                    <span style="color: red" th:if="${#fields.hasErrors('locality')}" th:errors="*{locality}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 div-custom">
+                                <div class="form-group">
+                                    <label for="phone">Номер телефона
+                                        <text style="color: red">*</text>
+                                    </label>
+                                    <input th:value="*{phone}" id="phone" type="tel" name="phone" class="form-control" required>
+                                    <label>Использовать указанный в личном кабинете
+                                        <text style="color: red">*</text>
+                                        <input onclick="onPhoneCheckboxClick(this)" th:checked="${param.showPhone}" type="checkbox" name="showPhone">
+                                    </label>
+                                    <span style="color: red" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 div-custom">
+                                <div class="form-group">
+                                    <label for="description">Описание
+                                        <text style="color: red">*</text>
+                                    </label>
+                                    <textarea th:text="*{description}" id="description" name="description" class="form-control" rows="4" required></textarea>
+                                    <span style="color: red" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 div-custom">
+                                <div class="form-group">
+                                    <label for="price">Цена в рублях (пример: 1200.5)
+                                        <text style="color: red">*</text>
+                                    </label>
+                                    <input th:value="*{price}" type="text" id="price" name="price" class="form-control">
+                                    <span style="color: red" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                                </div>
+                            </div>
+                            <input th:value="${_csrf}" hidden name="_csrf">
+                            <div class="col-md-12 div-custom">
+                                <input type="submit" class="btn btn-success btn-send  pt-2 btn-block"
+                                       value="Разместить объявление">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/navbar.js"></script>
+<script src="/static/js/new_advert.js"></script>
+</body>
+</html>

@@ -8,15 +8,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.kpfu.itis.model.RefreshToken;
-import ru.kpfu.itis.model.Role;
-import ru.kpfu.itis.model.State;
+import ru.kpfu.itis.model.enums.Role;
+import ru.kpfu.itis.model.enums.State;
 import ru.kpfu.itis.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 import static ru.kpfu.itis.model.RefreshToken.EXPIRE_DAYS;

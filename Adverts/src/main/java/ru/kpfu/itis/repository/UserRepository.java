@@ -16,6 +16,8 @@ public interface UserRepository {
 
     void update(User user);
 
+    void delete(User user);
+
     void banByEmail(String email) throws UserNotFoundException;
 
     void deleteByEmail(String email) throws UserNotFoundException;

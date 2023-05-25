@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: advert-db
+    image: postgres:12-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTRES_PASSWORD: bigdata8
+      POSTRES_DB: adverts-db
+
+  app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

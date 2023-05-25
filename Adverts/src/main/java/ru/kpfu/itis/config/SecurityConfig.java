@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     //If the access token is still alive, and the user is banned or deleted, and he wants, for example, to create a new ad
     public static final String[] DANGER_URL_PREFIXES = new String[]{
-            "/admin", "/new_advert"
+            "/admin", "/advert/new/transport", "/advert/new/electronics"
     };
 
     public static final String[] ADMIN_URL_PREFIX = new String[]{
@@ -36,11 +36,11 @@ public class SecurityConfig {
     };
 
     public static final String[] AUTHENTICATION_URL_PREFIXES = new String[]{
-            "/admin", "/profile", "/new_advert"
+            "/admin", "/profile", "/advert/new"
     };
 
     public static final String[] CSRF_URLS = new String[]{
-            "/admin/ban", "/admin/delete"
+            "/admin/ban", "/admin/delete", "/advert/new/transport", "/advert/new/electronics"
     };
 
     @Bean

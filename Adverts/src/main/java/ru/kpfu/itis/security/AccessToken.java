@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.kpfu.itis.model.Role;
-import ru.kpfu.itis.model.State;
+import ru.kpfu.itis.model.enums.Role;
+import ru.kpfu.itis.model.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <title>Редактирование профиля</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -10,7 +10,7 @@
 </head>
 <body>
 <div th:insert="~{navbar::navbar}"></div>
-<form th:object="${user}" method="post" th:action="@{/profile/edit}">
+<form th:object="${user}" enctype="multipart/form-data" method="post" th:action="@{/profile/edit}">
     <div style="margin-top: 40px" class="col-lg-7">
         <div class="card">
             <h5>Все изменённые поля будут сохранены</h5>
@@ -20,7 +20,7 @@
                         <h6 class="mt-2">Фото</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="file" class="form-control">
+                        <input th:value="*{file}" accept="image/png, image/jpeg, image/jpg" name="file" id="file" type="file" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -78,5 +78,6 @@
         </div>
     </div>
 </form>
+<script src="/static/js/navbar.js"></script>
 </body>
 </html>

@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class UserResponse {
 
+    private String fileName;
+
     private String email;
 
     private String firstName;
