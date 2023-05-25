@@ -33,6 +33,8 @@ public class FileServiceImpl implements FileService {
             return;
         }
         for (MultipartFile file : files) {
+            if (file.getSize() == 0)
+                continue;
             try {
                 String hash = DigestUtils.md5Hex(file.getBytes());
 
@@ -40,12 +42,16 @@ public class FileServiceImpl implements FileService {
                 if (optionalFile.isPresent()) {
                     File f = optionalFile.get();
                     if (advertType == AdvertType.TRANSPORT) {
-                        f.getTransportAdverts().add((TransportAdvert) advert);
-                        fileRepository.save(f);
+                        if (!f.getTransportAdverts().contains((TransportAdvert) advert)) {
+                            f.getTransportAdverts().add((TransportAdvert) advert);
+                            fileRepository.save(f);
+                        }
                     }
                     if (advertType == AdvertType.ELECTRONICS) {
-                        f.getElectronicsAdverts().add((ElectronicsAdvert) advert);
-                        fileRepository.save(f);
+                        if (!f.getElectronicsAdverts().contains((ElectronicsAdvert) advert)) {
+                            f.getElectronicsAdverts().add((ElectronicsAdvert) advert);
+                            fileRepository.save(f);
+                        }
                     }
                 } else {
                     String path = environment.getRequiredProperty("file.upload.path");
@@ -85,7 +91,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void uploadUserFile(MultipartFile file, User user) {
-        if (file == null) {
+        if (file == null || file.getSize() == 0) {
             return;
         }
         try {
