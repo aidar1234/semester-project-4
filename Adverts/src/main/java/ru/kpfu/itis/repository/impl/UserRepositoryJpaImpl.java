@@ -55,6 +55,7 @@ public class UserRepositoryJpaImpl implements UserRepository {
     @Transactional
     @Override
     public void update(User user) {
+        System.out.println(entityManager);
         entityManager.update(user);
         entityManager.flush();
     }

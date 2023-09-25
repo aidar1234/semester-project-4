@@ -25,6 +25,8 @@ import java.util.Properties;
 @PropertySource("classpath:database.properties")
 public class DatabaseConfig {
 
+    // Я сделал данное изменение
+
     private final Environment environment;
 
     @Autowired

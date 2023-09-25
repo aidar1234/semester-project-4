@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kpfu.itis.exception.AdvertNotFoundException;
 import ru.kpfu.itis.exception.UserNotFoundException;
 import ru.kpfu.itis.model.ElectronicsAdvert;
-import ru.kpfu.itis.model.TransportAdvert;
 import ru.kpfu.itis.model.User;
-import ru.kpfu.itis.model.enums.TransportKind;
 import ru.kpfu.itis.repository.ElectronicsAdvertRepository;
 import ru.kpfu.itis.repository.UserRepository;
 
